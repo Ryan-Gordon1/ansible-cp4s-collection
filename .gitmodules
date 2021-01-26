@@ -1,0 +1,3 @@
+[submodule "roles/cp4s"]
+	path = roles/cp4s
+	url = git@github.com:Ryan-Gordon1/ansible-cp4s-role.git
