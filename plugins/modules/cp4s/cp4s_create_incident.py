@@ -44,11 +44,17 @@ EXAMPLES = r'''
   ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
     name: Case created from an Ansible Module
 
-# pass in a message and have changed true
+# pass in name and a json-str of extra options
 - name: Test creation of a Case with a name
   ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
     name: Case created from an Ansible Module
-    payload: {"description": {"format":"text", "content": "Case created from an Ansible Module"}}
+    payload: '{'description':{'format':'html','content':'hello'}}'
+
+# pass in a dictionary var and have changed using the builtin to_json
+- name: Test creation of a Case with a name
+  ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
+    name: Case created from an Ansible Module
+    payload: {{mydictionary | to_json}}
 
 # fail the module
 - name: Test failure of the module
@@ -78,6 +84,7 @@ message:
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
+    # ansible module_args cannot accept a dict for custom modules so use a json str for input
     module_args = dict(
         name=dict(type='str', required=True),
         payload=dict(type='dict', required=False, default={})
