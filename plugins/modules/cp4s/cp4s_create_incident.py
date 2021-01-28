@@ -6,9 +6,8 @@
 # The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import (absolute_import, division, print_function)
+from ansible.module_utils.basic import AnsibleModule
 
-# Additional import of common code 
-# from cp4s_common import create_authenticated_client
 
 __metaclass__ = type
 
@@ -71,13 +70,17 @@ message:
     sample: 'goodbye'
 '''
 
-from ansible.module_utils.basic import AnsibleModule
+# TODO: Review the encapsulation of common logic in module utils
+# So far i have not gotten it to work.
+# When working according to the docs this statement should work
+# from ansible_collections.ryan_gordon1.cloud_pak_for_security.plugins.module_utils.cp4s_common_logic import create_authenticated_client
+
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         name=dict(type='str', required=True),
-        new=dict(type='bool', required=False, default=False)
+        payload=dict(type='dict', required=False, default={})
     )
 
     # seed the result dict in the object
@@ -87,8 +90,7 @@ def run_module():
     # for consumption, for example, in a subsequent task
     result = dict(
         changed=False,
-        original_message='',
-        message=''
+        response=''
     )
 
     # the AnsibleModule object will be our abstraction working with Ansible
@@ -106,24 +108,22 @@ def run_module():
     if module.check_mode:
         module.exit_json(**result)
 
-    # manipulate or modify the state as needed (this is going to be the
-    # part where your module will do what it needs to do)
-    # result['original_message'] = module.params['name']
-    # result['message'] = 'goodbye'
-
-    # use whatever logic you need to determine whether or not this module
-    # made any modifications to your target
-    if module.params['new']:
-        result['changed'] = True
-
     # during the execution of the module, if there is an exception or a
     # conditional state that effectively causes a failure, run
     # AnsibleModule.fail_json() to pass in the message and the result
     if module.params['name'] == 'fail me':
         module.fail_json(msg='You requested this to fail', **result)
 
-    incident = create_incident(incident_name=module.params.get('name', 'Test from Ansible module'), payload=module.params.get('payload', {}))
-    result.update({"case": incident})
+    # TODO: Review if we can make the exception less bare, or if we can use a conditional for the changed property instead
+    try:  # Try to make the API call
+        incident = create_incident(incident_name=module.params.get(
+            'name', 'Test from Ansible module'), payload=module.params.get('payload', {}))
+        result.update({"case": incident})
+    except Exception as e:  # we need to except in order to do else; use bare except and just raise the exception as normal
+        # raise  # raises the exact error that would have otherwise been raised.
+        module.fail_json(msg=u'An exception occurred when creating the case: {}'.format(e), **result)
+    else:  # if no expections are raised we can assume the API call is successful and has changed state
+        result['changed'] = True
 
     # in the event of a successful module execution, you will want to
     # simple AnsibleModule.exit_json(), passing the key/value results
@@ -131,6 +131,18 @@ def run_module():
 
 
 def create_incident(incident_name: str, payload: dict):
+    """create_incident is a helper function which 
+    will get a handle on an instance of the REST API client
+    from create and then make an API call to create an incident
+    with the provided name and payload.
+
+    :param incident_name: The name which will be given to the Incident/Case
+    :type incident_name: str
+    :param payload: An optional control dictionary which exposes the rest of the REST API call to you should you need it 
+    :type payload: dict
+    :return: The created Incident; no exceptions are handled here. If a 4XX code is returned for Auth or something else, this will fail
+    :rtype: dict (IncidentDTO)
+    """
     client = create_authenticated_client()
 
     return client.post("/incidents", {
@@ -141,6 +153,17 @@ def create_incident(incident_name: str, payload: dict):
 
 
 def create_authenticated_client():
+    """create_authenticated_client uses the resilient package
+    to gather values from a standard app.config file; the configuration file
+    used for an Integration Server or App Host App.
+    This means all credentials needed to run this module can be kept 
+    separate and we can also avoid var prompts.
+    Note: If your running this module on a host other than localhost, 
+    that host needs to have an app.config file or you need to copy one over.
+
+    :return: An authenticated rest client to CP4S or Resilient
+    :rtype: SimpleClient
+    """
     import resilient
     # Create Resilient API Client
     resilient_parser = resilient.ArgumentParser(
