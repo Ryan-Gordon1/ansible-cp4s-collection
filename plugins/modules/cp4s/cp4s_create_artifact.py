@@ -14,9 +14,9 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: cp4s_close_incident
+module: cp4s_create_artifact
 
-short_description: A Module used to create an Case in CP4S or Resilient
+short_description: A Module used to create an Artifact in CP4S or Resilient
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
@@ -45,14 +45,14 @@ author:
 
 EXAMPLES = r'''
 # Pass in a message
-- name: Test closure of a Case
-  ryan_gordon1.cloud_pak_for_security.cp4s_close_incident:
+- name: Test creation of a DNS Name artifact
+  ryan_gordon1.cloud_pak_for_security.cp4s_create_artifact:
     type: 'DNS Name'
     value: 'google.com'
 
 # pass in a message and have changed true
-- name: Test closure of a Case
-  ryan_gordon1.cloud_pak_for_security.cp4s_close_incident:
+- name: Test creation of a IP Address artifact
+  ryan_gordon1.cloud_pak_for_security.cp4s_create_artifact:
     type: 'IP Address'
     value: '9.9.9.9'
 
