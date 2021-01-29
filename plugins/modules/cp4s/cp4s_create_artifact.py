@@ -22,7 +22,7 @@ short_description: A Module used to create an Artifact in CP4S or Resilient
 # i.e. the version is of the form "2.5.0" and not "2.4".
 version_added: "1.0.0"
 
-description: This module is an example of how you can choose to use a module or a role to achieve a similar outcome. An almost identical piece of functionality exists in the CP4S role but this gives a programmatic way to do it.
+description: Note: This module depends on the global artifacts feature. This module is an example of how you can choose to use a module or a role to achieve a similar outcome. An almost identical piece of functionality exists in the CP4S role but this gives a programmatic way to do it.
 
 options:
     type:
@@ -131,7 +131,7 @@ def run_module():
 
     except Exception as e:  # we need to except in order to do else; use bare except and just raise the exception as normal
         # raise  # raises the exact error that would have otherwise been raised.
-        module.fail_json(msg=u'An exception occurred when creating an artifact: {}'.format(module.params['case_id'],e), **result)
+        module.fail_json(msg=u'An exception occurred when creating an artifact: {}'.format(e), **result)
     else:  # if no expections are raised we can assume the API call is successful and has changed state
         result['changed'] = True
 

@@ -67,7 +67,7 @@ def run_module():
     # define available arguments/parameters a user can pass to the module
     module_args = dict(
         case_id=dict(type='int', required=True),
-        rule_id=dict(type='int', required=False, default=False)
+        action_id=dict(type='int', required=False, default=False)
     )
 
     # seed the result dict in the object
@@ -99,7 +99,7 @@ def run_module():
     # TODO: Review if we can make the exception less bare, or if we can use a conditional for the changed property instead
     try:  # Try to make the API call
         response = trigger_rule(case_id=module.params.get(
-            'case_id', 0), rule_id=module.params.get('rule_id', 0))
+            'case_id', 0), action_id=module.params.get('action_id', 0))
 
         # Add the response to the result to return
         result.update({"rule_trigger_result": response})
@@ -116,10 +116,10 @@ def run_module():
     module.exit_json(**result)
 
 
-def trigger_rule(case_id: int, rule_id: int):
+def trigger_rule(case_id: int, action_id: int):
     client = create_authenticated_client()
     # This API is NOT SUPPORTED at the time of this modules development. You can see it using chrome dev tools.
-    return client.post("/incidents/{case_id}/action_invocations".format(case_id), {"action_id": rule_id, "properties": {"job_status": [], "last_updated": 152}})
+    return client.post("/incidents/{case_id}/action_invocations".format(case_id), {"action_id": action_id, "properties": {"job_status": [], "last_updated": 152}})
 
 
 def create_authenticated_client():
