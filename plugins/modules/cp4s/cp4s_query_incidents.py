@@ -7,7 +7,7 @@
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 from __future__ import (absolute_import, division, print_function)
 from ansible.module_utils.basic import AnsibleModule
-
+import json
 
 __metaclass__ = type
 
@@ -111,20 +111,14 @@ message:
     sample: 'goodbye'
 '''
 
-# TODO: Review the encapsulation of common logic in module utils
-# So far i have not gotten it to work.
-# When working according to the docs this statement should work
-# from ansible_collections.ryan_gordon1.cloud_pak_for_security.plugins.module_utils.cp4s_common_logic import create_authenticated_client
-
-
 def run_module():
     # define available arguments/parameters a user can pass to the module
     # ansible module_args cannot accept a dict for custom modules so use a json str for input
     module_args = dict(
-        conditions=dict(type='list', required=True),
+        conditions=dict(type='str', required=True),
         method=dict(type='str', required=False, default=None),
         plan_status=dict(type='str', required=False, default="A"),
-        multiple_fields=dict(type='str', required=False, default=False),
+        multiple_fields=dict(type='bool', required=False, default=False),
         fail=dict(type="str", required=False, default="")
     )
 
@@ -160,19 +154,22 @@ def run_module():
         module.fail_json(msg='You requested this to fail', **result)
 
     # cast string to bool for multiple_fields param
-    module.params["mulitple_fields"] = False if module.params.get("mulitple_fields", "false").lower() == "false" else True
+    # if module.params["multiple_fields"] and module.params["multiple_fields"].
 
     module.params["plan_status"] = module.params.get("plan_status", "A").upper()
 
     # TODO: Review if we can make the exception less bare, or if we can use a conditional for the changed property instead
     try:  # Try to make the API call
         response = query_incident(
-            module.params["conditions"],
+            json.loads(module.params["conditions"]),
             method=module.params.get("method", None),
             plan_status=module.params.get("plan_status", "A"),
-            mulitple_fields=module.params.get("multiple_fields", False)
-        )
-        result.update({"response": response})
+            mulitple_fields=module.params["multiple_fields"]
+            )
+        result.update({
+            "success": True,
+            "response": response
+            })
     except Exception as e:  # we need to except in order to do else; use bare except and just raise the exception as normal
         # raise  # raises the exact error that would have otherwise been raised.
         module.fail_json(msg=u'An exception occurred when querying cases : {}'.format(e), **result)
@@ -205,11 +202,11 @@ def query_incident(conditions: list, method=None, plan_status="A", mulitple_fiel
     query_uri = u"/incidents/query?return_level=normal"
 
     if not mulitple_fields:
-        conditions.append(buildConditionDict(conditions))
+        conditionList.append(buildConditionDict(conditions))
         query_uri += u"&field_handle={}".format(conditions[0])
     else:
         for condition in conditions:
-            conditions.append(buildConditionDict(condition))
+            conditionList.append(buildConditionDict(condition))
             query_uri += u"&field_handle={}".format(condition[0])
 
     conditionList.append({
