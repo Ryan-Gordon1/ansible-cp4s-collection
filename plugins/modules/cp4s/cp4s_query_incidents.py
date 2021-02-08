@@ -21,22 +21,23 @@ short_description: A Module used to query Cases/Incidents in CP4S or Resilient
 # i.e. the version is of the form "2.5.0" and not "2.4".
 version_added: "1.0.0"
 
-description: This module is an example of how you can choose to use a module or a role to achieve a similar outcome. An almost identical piece of functionality exists in the CP4S role but this gives a programmatic way to do it.
+description: This module is an example of how to query Cases in CP4S by one or more incident field.
 
 options:
     conditions:
         description:
-            - list of conditions to query
-            - [field, value, method] if querying one field
+            - list of keys (incident fields) to query cases
+            - [key, value, method] if querying one field
             - [ [field, value, method], [field, value, method] ] if multiple field query is desired
+            - see resilient REST API documentation for a complete list of available methods
         required: true
-        type: list
+        type: stringified list
     method:
         description: set global method for conditions
         required: false
         type: string
     plan_status:
-        description: pass "C" to query closed incidents
+        description: pass "C" to query closed incidents, by default open incidents are queried
         required: false
         type: string
     multiple_fields:
@@ -53,40 +54,39 @@ author:
     - Brian Reid (@breid1313)
 '''
 
-#TODO
 EXAMPLES = r'''
 # Query open incidents by name, non-exact match
 - name: Test query on CP4S cases
   ryan_gordon1.cloud_pak_for_security.cp4s_query_incidents:
-    conditions: ["name", "example_name", "contains"]
+    conditions: '["name", "example_name", "contains"]'
 
 # Query open incidents by name, exact match
 - name: Test query on CP4S cases
   ryan_gordon1.cloud_pak_for_security.cp4s_query_incidents:
-    conditions: ["name", "example_name", "equals"]
+    conditions: '["name", "example_name", "equals"]'
 
 # Query closed incidents by name
 - name: Test query on CP4S cases
   ryan_gordon1.cloud_pak_for_security.cp4s_query_incidents:
-    conditions: ["name", "example_name", "equals"]
+    conditions: ["name", "example_name", "equals"]'
     plan_status: "C"
 
 # Query open incidents on multiple fields
 - name: Test query on CP4S cases
   ryan_gordon1.cloud_pak_for_security.cp4s_query_incidents:
-    conditions: [
+    conditions: '[
                     ["name", "example_name", "equals"],
                     ["name2", "example_name2", "contains"]
-                ]
+                ]'
     multiple_fields: "true"
 
 # Query open incidents on multiple fields with global method condition
 - name: Test query on CP4S cases
   ryan_gordon1.cloud_pak_for_security.cp4s_query_incidents:
-    conditions: [
+    conditions: '[
                     ["name", "example_name"],
                     ["name2", "example_name2"]
-                ]
+                ]'
     method: "equals"
     multiple_fields: "true"
 
@@ -94,6 +94,7 @@ EXAMPLES = r'''
 # fail the module (pass anything to fail param)
 - name: Test failure of the module
   ryan_gordon1.cloud_pak_for_security.cp4s_query_incidents:
+    conditions: '[]'
     fail: fail me
 '''
 
