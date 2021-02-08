@@ -130,7 +130,8 @@ def run_module():
     # for consumption, for example, in a subsequent task
     result = dict(
         changed=False,
-        response=''
+        response='',
+        success=False
     )
 
     # the AnsibleModule object will be our abstraction working with Ansible
