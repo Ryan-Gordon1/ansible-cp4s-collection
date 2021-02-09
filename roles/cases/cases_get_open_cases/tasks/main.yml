@@ -1,0 +1,13 @@
+- name: Retrieve a list of related cases
+  cp4s_get_related_cases:
+  register: related_cases
+
+- name: Print out list of open cases
+  debug:
+    msg:
+      - "open_cases"
+      - "ID: {{ item.id }}"
+      - "Name: {{item.name}}"
+  loop: "{{ open_cases.case }}"
+  loop_control:
+    label: "{{ item.id }}"
