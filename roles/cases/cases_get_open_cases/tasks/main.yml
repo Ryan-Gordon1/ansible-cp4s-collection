@@ -1,6 +1,6 @@
-- name: Retrieve a list of related cases
+- name: Retrieve a list of open cases
   cp4s_get_related_cases:
-  register: related_cases
+  register: open_cases
 
 - name: Print out list of open cases
   debug:
