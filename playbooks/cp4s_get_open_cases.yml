@@ -7,19 +7,5 @@
 
 - hosts: localhost
   gather_facts: no
-  tasks:
-    # Note depending on whether you install this from ansible galaxy or locally the module name may need to be changed.
-    # ryan_gordon1.cloud_pak_for_security.<module_name> or <module_name>
-    - name: Retrieve a list of open cases
-      cp4s_get_open_cases:
-      register: open_cases
-
-    - name: Print out list of open cases
-      debug:
-        msg:
-          - "open_cases"
-          - "ID: {{ item.id }}"
-          - "Name: {{item.name}}"
-      loop: "{{ open_cases.case }}"
-      loop_control:
-        label: "{{ item.id }}"
+  roles:
+    - ../roles/cases/cases_get_open_cases

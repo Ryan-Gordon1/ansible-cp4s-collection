@@ -1,5 +1,5 @@
 - name: Retrieve a list of open cases
-  cp4s_get_related_cases:
+  cp4s_get_open_cases:
   register: open_cases
 
 - name: Print out list of open cases
