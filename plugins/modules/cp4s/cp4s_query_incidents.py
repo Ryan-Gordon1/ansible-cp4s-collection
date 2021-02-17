@@ -28,8 +28,8 @@ options:
         description:
             - list of keys (incident fields) to query cases
             - [key, value, method] if querying one field
-            - [ [field, value, method], [field, value, method] ] if multiple field query is desired
-            - see resilient REST API documentation for a complete list of available methods
+            - [ [key, value, method], [key, value, method] ] if multiple field query is desired
+            - see resilient REST API documentation for a complete list of available methods and field keys
         required: true
         type: stringified list
     method:
@@ -76,7 +76,7 @@ EXAMPLES = r'''
   ryan_gordon1.cloud_pak_for_security.cp4s_query_incidents:
     conditions: '[
                     ["name", "example_name", "equals"],
-                    ["name2", "example_name2", "contains"]
+                    ["description", "example_desc", "contains"]
                 ]'
     multiple_fields: "true"
 
@@ -85,7 +85,7 @@ EXAMPLES = r'''
   ryan_gordon1.cloud_pak_for_security.cp4s_query_incidents:
     conditions: '[
                     ["name", "example_name"],
-                    ["name2", "example_name2"]
+                    ["description", "example_desc"]
                 ]'
     method: "equals"
     multiple_fields: "true"
