@@ -1,5 +1,5 @@
 
-# Copyright: (c) 2021, Ryan Gordon
+# Copyright: (c) 2021, Dara Meaney
 # The MIT License
 #  
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -13,9 +13,9 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: cp4s_create_incident
+module: cp4s_get_open_cases
 
-short_description: A Module used to create an Case in CP4S or Resilient
+short_description: A Module used to get a list of open Cases in CP4S or Resilient
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
@@ -23,39 +23,11 @@ version_added: "1.0.0"
 
 description: This module is an example of how you can choose to use a module or a role to achieve a similar outcome. An almost identical piece of functionality exists in the CP4S role but this gives a programmatic way to do it.
 
-options:
-    name:
-        description: This is the name to set for the newly created case.
-        required: true
-        type: str
-    payload:
-        description:
-            - Control to set fields on the created case that are not mandatory
-        required: false
-        type: dict
-
 author:
-    - Ryan Gordon (@Ryan-Gordon)
+    - Dara Meaney
 '''
 
 EXAMPLES = r'''
-# Pass in a message
-- name: Test creation of a Case with a name
-  ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
-    name: Case created from an Ansible Module
-
-# pass in name and a json-str of extra options
-- name: Test creation of a Case with a name
-  ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
-    name: Case created from an Ansible Module
-    payload: '{'description':{'format':'html','content':'hello'}}'
-
-# pass in a dictionary var and have changed using the builtin to_json
-- name: Test creation of a Case with a name
-  ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
-    name: Case created from an Ansible Module
-    payload: {{mydictionary | to_json}}
-
 # fail the module
 - name: Test failure of the module
   ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
@@ -75,12 +47,6 @@ message:
     returned: always
     sample: 'goodbye'
 '''
-
-# TODO: Review the encapsulation of common logic in module utils
-# So far i have not gotten it to work.
-# When working according to the docs this statement should work
-# from ansible_collections.ryan_gordon1.cloud_pak_for_security.plugins.module_utils.cp4s_common_logic import create_authenticated_client
-
 
 def run_module():
     # define available arguments/parameters a user can pass to the module
@@ -137,16 +103,11 @@ def run_module():
 
 
 def get_open_cases():
-    """create_incident is a helper function which
+    """get_open_cases is a helper function which
     will get a handle on an instance of the REST API client
-    from create and then make an API call to create an incident
-    with the provided name and payload.
+    and then make an API call to get a list of open cases
 
-    :param incident_name: The name which will be given to the Incident/Case
-    :type incident_name: str
-    :param payload: An optional control dictionary which exposes the rest of the REST API call to you should you need it
-    :type payload: dict
-    :return: The created Incident; no exceptions are handled here. If a 4XX code is returned for Auth or something else, this will fail
+    :return: The list of open Incidents; no exceptions are handled here. If a 4XX code is returned for Auth or something else, this will fail
     :rtype: dict (IncidentDTO)
     """
     client = create_authenticated_client()
