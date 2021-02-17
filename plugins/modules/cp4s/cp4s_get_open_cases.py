@@ -27,33 +27,11 @@ author:
     - Dara Meaney
 '''
 
-EXAMPLES = r'''
-# fail the module
-- name: Test failure of the module
-  ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
-    name: fail me
-'''
-
-RETURN = r'''
-# These are examples of possible return values, and in general should use other names for return values.
-original_message:
-    description: The original name param that was passed in.
-    type: str
-    returned: always
-    sample: 'hello world'
-message:
-    description: The output message that the test module generates.
-    type: str
-    returned: always
-    sample: 'goodbye'
-'''
-
 def run_module():
     # define available arguments/parameters a user can pass to the module
     # ansible module_args cannot accept a dict for custom modules so use a json str for input
     module_args = dict(
-        name=dict(type='str', required=False),
-        payload=dict(type='dict', required=False, default={})
+        name=dict(type='str', required=False)
     )
 
     # seed the result dict in the object
