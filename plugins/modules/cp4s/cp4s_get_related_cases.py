@@ -30,7 +30,7 @@ author:
 EXAMPLES = r'''
 # fail the module
 - name: Test failure of the module
-  ryan_gordon1.cloud_pak_for_security.cp4s_create_incident:
+  ryan_gordon1.cloud_pak_for_security.cp4s_get_related_cases:
     name: fail me
 '''
 
@@ -105,9 +105,7 @@ def run_module():
 
 def get_related_cases(incident_id: str):
     """get_related_cases is a helper function which
-    will get a handle on an instance of the REST API client
-    from create and then make an API call to create an incident
-    with the provided name and payload.
+    will get a handle on an instance of the REST API client.
 
     :param incident_id: The incident/case id used when making the request
     :type incident_id: str
