@@ -13,9 +13,9 @@ __metaclass__ = type
 
 DOCUMENTATION = r'''
 ---
-module: cp4s_get_open_cases
+module: cp4s_get_related_cases
 
-short_description: A Module used to get a list of open Cases in CP4S or Resilient
+short_description: A Module used to return a list of related Incident/Cases in CP4S or Resilient
 
 # If this is part of a collection, you need to use semantic versioning,
 # i.e. the version is of the form "2.5.0" and not "2.4".
@@ -52,7 +52,7 @@ def run_module():
     # define available arguments/parameters a user can pass to the module
     # ansible module_args cannot accept a dict for custom modules so use a json str for input
     module_args = dict(
-        name=dict(type='str', required=False),
+        incidentId=dict(type='str', required=True),
         payload=dict(type='dict', required=False, default={})
     )
 
@@ -84,12 +84,13 @@ def run_module():
     # during the execution of the module, if there is an exception or a
     # conditional state that effectively causes a failure, run
     # AnsibleModule.fail_json() to pass in the message and the result
-    if module.params['name'] == 'fail me':
+    if module.params['incidentId'] == 'fail me':
         module.fail_json(msg='You requested this to fail', **result)
 
     # TODO: Review if we can make the exception less bare, or if we can use a conditional for the changed property instead
     try:  # Try to make the API call
-        incident = get_open_cases()
+        incident = get_related_cases(incident_id=module.params.get(
+            'incidentId', {}))
         result.update({"case": incident})
     except Exception as e:  # we need to except in order to do else; use bare except and just raise the exception as normal
         # raise  # raises the exact error that would have otherwise been raised.
@@ -102,17 +103,20 @@ def run_module():
     module.exit_json(**result)
 
 
-def get_open_cases():
-    """get_open_cases is a helper function which
+def get_related_cases(incident_id: str):
+    """get_related_cases is a helper function which
     will get a handle on an instance of the REST API client
-    and then make an API call to get a list of open cases
+    from create and then make an API call to create an incident
+    with the provided name and payload.
 
-    :return: The list of open Incidents; no exceptions are handled here. If a 4XX code is returned for Auth or something else, this will fail
+    :param incident_id: The incident/case id used when making the request
+    :type incident_id: str
+    :return: A list of the related Incident/Cases; no exceptions are handled here. If a 4XX code is returned for Auth or something else, this will fail
     :rtype: dict (IncidentDTO)
     """
     client = create_authenticated_client()
 
-    return client.get("/incidents?want_closed=false")
+    return client.get("/incidents/{}/related_ex".format(incident_id))
 
 
 def create_authenticated_client():
