@@ -47,7 +47,6 @@ MIT
 Author Information
 ------------------
 
-An optional section for the role authors to include contact information, or a website (HTML is not allowed).
-This role was developed by Ryan Gordon @ IBM. See this link for our [community forum](http://ibm.biz/resilientcommunity). Please raise a github issue with problems.
+This collection was developed by Brian Reid, Dara Meaney and Ryan Gordon @ IBM Security. See this link for our [community forum](http://ibm.biz/resilientcommunity). Please raise a github issue with problems.
 
-TODO: I want to add all-contributors
+This repository was started and incubated in this repo before we added it to the IBM Org: https://github.com/Ryan-Gordon1/ansible-cp4s-collection
