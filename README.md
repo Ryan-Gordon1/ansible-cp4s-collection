@@ -1,4 +1,4 @@
-# Ansible Collection - ryan_gordon1.cloud_pak_for_security
+# Ansible Collection - ibm.cloud_pak_for_security
 ![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg) ![Maintenance](https://img.shields.io/badge/Maintained%3F-yes-green.svg)
 
 
@@ -15,7 +15,7 @@ Are you a technical user? The modules provide the most flexibility for accessing
 
 
 
-If you have a use case you think would be good as a part of an Ansible Collection, submit a PR. The hope is to build up this Collection and its accompanying collection over time.
+If you have a use case you think would be good as a part of an Ansible Collection, submit a PR. The hope is to build up this collection over time and speed up our go-to-market on the CP4S and Ansible story by creating a suite of use cases all achievable through automation and powered by Ansible.
 
 Requirements
 ------------
@@ -23,15 +23,19 @@ All the content in this collection works entirely with either the Cloud Pak for 
 Certain values are needed in order to make calls such as usernames, passwords and api keys. For security, it is advised to keep these values in a Ansible Vault if you plan to use these roles. 
 
 ## Modules 
-
-TBD list of modules
-
-#### Desired modules 
+#### Available modules 
 + get_open_cases
 + get_related_cases
 + privacy_data_types
 + privacy_regulator_types
 + query_cases
++ create_artifact
++ create_case
++ close_case
++ create_note
++ delete_case
++ trigger_action (or a playbook)
+
 
 
 ## Role

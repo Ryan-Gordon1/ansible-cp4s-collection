@@ -16,7 +16,7 @@
     msg:
       - "open_cases"
       - "ID: {{ item.id }}"
-      - "Name: {{item.name}}"
+      - "Name: {{ item.name }}"
   loop: "{{ open_cases.case }}"
   loop_control:
     label: "{{ item.id }}"

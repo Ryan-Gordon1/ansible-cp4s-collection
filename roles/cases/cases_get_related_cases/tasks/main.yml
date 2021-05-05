@@ -17,7 +17,7 @@
       - "Related Cases"
       -  "Case {{ incident_id }} is related to case {{ item.id }}"
       - "ID: {{ item.id }}"
-      - "Name: {{item.name}}"
+      - "Name: {{ item.name }}"
   loop: "{{ related_cases.case.incidents }}"
   loop_control:
     label: "{{ item.id }}"
